@@ -8,14 +8,14 @@ const AddTodo = ({
   visible: boolean;
   onPressCancle: (value: boolean) => void;
 }) => {
-  const [text, onChangeText] = useState('할 일을 입력하세요.');
+  const [text, onChangeText] = useState('');
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalBackground}>
         <View style={styles.modalContent}>
           <View>
-            <Text style={styles.text}>할 일을 입력하세요</Text>
+            <Text style={styles.text}>메모를 입력하세요</Text>
           </View>
           <TextInput
             style={styles.input}

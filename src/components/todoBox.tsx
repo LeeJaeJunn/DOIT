@@ -27,14 +27,13 @@ const TodoBox = ({data, edit}: {data: string; edit: boolean}) => {
         className={
           isDone
             ? 'bg-gray-500 rounded-lg  flex flex-row items-center justify-between w-5/6 '
-            : 'bg-gray-300 rounded-lg  flex flex-row items-center justify-between w-5/6'
+            : 'bg-gray-200 rounded-lg  flex flex-row items-center justify-between w-5/6'
         }>
         <Text className={isDone ? 'text-xl line-through' : 'text-xl'}>
           {data}
         </Text>
       </View>
-
-      <CheckBox onClick={handleIsDone} isChecked={isDone} />
+      {!edit && <CheckBox onClick={handleIsDone} isChecked={isDone} />}
     </View>
   );
 };
