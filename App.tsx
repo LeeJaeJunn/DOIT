@@ -6,24 +6,8 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import Main from './src/main';
 
 function App(): React.JSX.Element {
@@ -39,11 +23,7 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Main />
-      </ScrollView>
+      <Main />
     </SafeAreaView>
   );
 }

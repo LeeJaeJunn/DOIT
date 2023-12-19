@@ -13,7 +13,8 @@
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "0.73.1",
-    "react-native-calendars": "^1.1302.0"
+    "react-native-calendars": "^1.1302.0",
+    "react-native-check-box": "^2.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -24,6 +25,7 @@
     "@react-native/metro-config": "^0.73.2",
     "@react-native/typescript-config": "^0.73.1",
     "@types/react": "^18.2.6",
+    "@types/react-native-check-box": "^2.1.5",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",
     "eslint": "^8.19.0",
