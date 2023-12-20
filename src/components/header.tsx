@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Pressable, Text, View} from 'react-native';
 import CalendarScreen from './calendarScreen';
+import {MainContext} from '../main';
 
 const Header = ({
   onPressEdit,
@@ -9,6 +10,7 @@ const Header = ({
   onPressEdit: () => void;
   edit: boolean;
 }) => {
+  const {selectedDay} = useContext(MainContext);
   const [viewCalendar, setViewCalendar] = useState(false);
 
   const handleViewCalendar = () => {
@@ -31,7 +33,7 @@ const Header = ({
 
       <View className="flex flex-row items-center justify-center space-x-1">
         <View className="bg-gray-500 h-1 w-full" />
-        <Text>12.16</Text>
+        <Text>{selectedDay}</Text>
         <View className="bg-gray-500 h-1 w-full" />
       </View>
     </View>

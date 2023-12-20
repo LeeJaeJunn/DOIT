@@ -4,9 +4,11 @@ import {Button, Modal, StyleSheet, Text, TextInput, View} from 'react-native';
 const AddTodo = ({
   visible,
   onPressCancle,
+  onPressAdd,
 }: {
   visible: boolean;
   onPressCancle: (value: boolean) => void;
+  onPressAdd: () => void;
 }) => {
   const [text, onChangeText] = useState('');
 
@@ -25,7 +27,7 @@ const AddTodo = ({
           />
         </View>
         <View style={styles.buttonGroup}>
-          <Button onPress={() => onPressCancle(false)} title="저장" />
+          <Button onPress={onPressAdd} title="저장" />
           <View style={{width: 10}} />
           <Button
             color={'red'}
