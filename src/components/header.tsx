@@ -5,13 +5,9 @@ import CalendarScreen from './calendarScreen';
 const Header = ({
   onPressEdit,
   edit,
-  handleSelectedDay,
-  selectedDay,
 }: {
   onPressEdit: () => void;
   edit: boolean;
-  handleSelectedDay: (day: string) => void;
-  selectedDay: string;
 }) => {
   const [viewCalendar, setViewCalendar] = useState(false);
 
@@ -31,12 +27,7 @@ const Header = ({
         </Pressable>
       </View>
 
-      {viewCalendar && (
-        <CalendarScreen
-          handleSelectedDay={handleSelectedDay}
-          selectedDay={selectedDay}
-        />
-      )}
+      {viewCalendar && <CalendarScreen />}
 
       <View className="flex flex-row items-center justify-center space-x-1">
         <View className="bg-gray-500 h-1 w-full" />

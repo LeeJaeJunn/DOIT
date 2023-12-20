@@ -7,13 +7,12 @@ import {MainContext} from '../main';
 const TodoList = ({
   edit,
   onPressAdd,
-  selectedDay,
 }: {
   edit: boolean;
   onPressAdd: (value: boolean) => void;
-  selectedDay: string;
 }) => {
   const {data} = useContext(MainContext);
+  const {selectedDay} = useContext(MainContext);
 
   return (
     <ScrollView className="flex flex-col key px-3">
@@ -30,7 +29,7 @@ const TodoList = ({
           </Pressable>
         )}
       </View>
-      {data.selected?.todos.map(items => (
+      {data.days[selectedDay]?.todos?.map(items => (
         <TodoBox data={items.todo} key={items.id} edit={edit} />
       ))}
     </ScrollView>
