@@ -1,26 +1,43 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Text, View} from 'react-native';
 import CheckBox from 'react-native-check-box';
+import {MainContext} from '../main';
 
-const TodoBox = ({data, edit}: {data: string; edit: boolean}) => {
-  const [isDone, setIsDone] = useState(false);
+const TodoBox = ({
+  data,
+  edit,
+  index,
+  isDone,
+}: {
+  data: string;
+  edit: boolean;
+  index: number;
+  isDone: boolean;
+}) => {
   const [isDelete, setIsDelete] = useState(false);
-
-  const handleIsDone = () => {
-    setIsDone(!isDone);
-  };
+  const {handleCheckBox} = useContext(MainContext);
+  const {selectedDay} = useContext(MainContext);
 
   const HandleDelete = () => {
     setIsDelete(!isDelete);
   };
 
+  // console.log('데이터', JSON.stringify(data));
+
   return (
     <View className="flex flex-row items-center justify-between mt-3 w-100vw">
-      {edit && (
+      {edit ? (
         <CheckBox
           onClick={HandleDelete}
           isChecked={isDelete}
           checkBoxColor="#FF66b2"
+        />
+      ) : (
+        <CheckBox
+          onClick={() => {
+            handleCheckBox(selectedDay, index, !isDone);
+          }}
+          isChecked={isDone}
         />
       )}
       <View
@@ -33,7 +50,6 @@ const TodoBox = ({data, edit}: {data: string; edit: boolean}) => {
           {data}
         </Text>
       </View>
-      {!edit && <CheckBox onClick={handleIsDone} isChecked={isDone} />}
     </View>
   );
 };

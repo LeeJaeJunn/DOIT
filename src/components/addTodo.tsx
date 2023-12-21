@@ -1,16 +1,21 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Button, Modal, StyleSheet, Text, TextInput, View} from 'react-native';
+import {MainContext} from '../main';
 
 const AddTodo = ({
   visible,
   onPressCancle,
   onPressAdd,
+  text,
+  setText,
 }: {
   visible: boolean;
   onPressCancle: (value: boolean) => void;
-  onPressAdd: () => void;
+  onPressAdd: (selected: string, todo: string) => void;
+  text: string;
+  setText: (value: string) => void;
 }) => {
-  const [text, onChangeText] = useState('');
+  const {selectedDay} = useContext(MainContext);
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
@@ -23,16 +28,23 @@ const AddTodo = ({
             style={styles.input}
             multiline
             value={text}
-            onChangeText={onChangeText}
+            onChangeText={setText}
           />
         </View>
         <View style={styles.buttonGroup}>
-          <Button onPress={onPressAdd} title="저장" />
+          <Button onPress={() => onPressAdd(selectedDay, text)} title="저장" />
           <View style={{width: 10}} />
           <Button
             color={'red'}
             onPress={() => onPressCancle(false)}
             title="취소"
+          />
+          <Button
+            color={'red'}
+            onPress={() => {
+              console.log(text);
+            }}
+            title="확인 테스트"
           />
         </View>
       </View>

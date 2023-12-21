@@ -29,8 +29,14 @@ const TodoList = ({
           </Pressable>
         )}
       </View>
-      {data.days[selectedDay]?.todos?.map(items => (
-        <TodoBox data={items.todo} key={items.id} edit={edit} />
+      {data[selectedDay]?.todos?.map((items, index) => (
+        <TodoBox
+          data={items.todo}
+          isDone={items.isDone}
+          key={index}
+          edit={edit}
+          index={index}
+        />
       ))}
     </ScrollView>
   );
