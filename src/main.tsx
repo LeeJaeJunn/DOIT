@@ -141,32 +141,43 @@ const Main = () => {
       await AsyncStorage.setItem('days', JSON.stringify(daysData));
       // 임시로 저장, 체크박스 누를떄마다 데이터 새로가져옴.
       setData(daysData);
-      console.log('데이터 수정됨', JSON.stringify(daysData));
     } catch (e) {
       console.log('데이터 수정 중 에러', e);
     }
   };
 
   //삭제버튼
-  const handleDelete = async (day: string, index) => {
+  const handleDelete = async (day: string) => {
     // day는 selectedDay, index는 deleteChecked
     try {
       const daysData = await getData();
       // selectedDay의 todos 배열 가져오기
       const todos = daysData[day]?.todos || null;
+      if (!todos) {
+        console.log('배열없음');
+        return;
+      }
       // 삭제할 인덱스들을 정렬해 뒤에서부터 제거
-      const sortedIndex = index.sort((a, b) => b - a);
+      const sortedIndex = deleteChecked.sort((a, b) => b - a);
       // todos 배열에서 삭제할 인덱스를 제거
       const updatedTodos = todos.filter(
         (_, index) => !sortedIndex.includes(index),
       );
+      console.log('sortedIndex', JSON.stringify(updatedTodos));
       // 데이터 저장
-      daysData[day] = {todos: updatedTodos};
-      await AsyncStorage.setItem('days', JSON.stringify(daysData));
+      if (updatedTodos.length > 0) {
+        daysData[day] = {todos: updatedTodos};
+        await AsyncStorage.setItem('days', JSON.stringify(daysData));
+        setData(daysData);
+        console.log('데이터 삭제됨', JSON.stringify(daysData));
+      } else {
+        delete daysData[selectedDay];
+        await AsyncStorage.setItem('days', JSON.stringify(daysData));
+        setData(daysData);
+        console.log('데이터 삭제됨', JSON.stringify(daysData));
+      }
       //삭제 체크 데이터 초기화
       setDeleteChecked([]);
-      setData(daysData);
-      console.log('데이터 삭제됨');
       //삭제 체크박스 초기화
     } catch (e) {
       console.log('데이터 삭제중 에러', e);
@@ -197,24 +208,15 @@ const Main = () => {
     try {
       await AsyncStorage.clear();
       console.log('초기화됨');
+      const daysData = await getData();
+      setData(daysData);
+      console.log('초기화됐나?', daysData);
     } catch (e) {
       console.log('초기화중 오류발생');
     }
   };
 
-  // 데이터를 markedData로 변경(todos 삭제, marked 추가) 데이터: 임시 더미데이터 사용
-  // useEffect(() => {
-  //   const obj = {
-  //     days: Object.fromEntries(
-  //       Object.keys(dummy.days).map(items => [items, {marked: true}]),
-  //     ),
-  //   };
-  //   setMarkedData(obj.days);
-  //   const aaa = {[selectedDay]: {selected: true}};
-  //   setCalendarData({...obj.days, ...aaa});
-  // }, [data]);
-
-  // 초기 데이터 설정 [data]를 해줘야 하는데 무한 리로딩 문제...
+  // 초기 데이터 설정
   useEffect(() => {
     async function getDatas() {
       try {
@@ -223,13 +225,13 @@ const Main = () => {
         setData(aaa);
         console.log('초기 데이터 가져옴');
       } catch (e) {
-        console.log('초기 데이터 설정 오류(markedData부분)', e);
+        console.log('초기 데이터 설정 오류', e);
       }
     }
     getDatas();
   }, []);
 
-  // 데이터를 markedData로 변경(todos 삭제, marked 추가) 데이터: AsyncStaorge 사용
+  // 데이터를 markedData로 변경(todos 삭제, marked 추가)
   useEffect(() => {
     const obj = {
       days: Object.fromEntries(
@@ -252,6 +254,11 @@ const Main = () => {
       isMounted.current = true;
     }
   }, [selectedDay, markedData]);
+
+  //어떤 행동이 일어났을떄 삭제 체크박스 초기화.
+  useEffect(() => {
+    setDeleteChecked([]);
+  }, [data, edit, selectedDay]);
 
   if (!data || !selectedDay) {
     return null;
@@ -282,13 +289,12 @@ const Main = () => {
           onPressAdd={setModalAdd}
           onPressDelete={handleDelete}
           onPressDeleteCheckbox={handleDeleteCheckbox}
-          deleteChecked={deleteChecked}
         />
         {/* <Test /> */}
       </MainContext.Provider>
       <Button title="삭제 테스트" onPress={deleteTest} />
       <Button title="데이터 테스트" onPress={dataTest} />
-      {/* <Button title="데이터 초기화 테스트" onPress={clearAll} /> */}
+      <Button title="데이터 초기화 테스트" onPress={clearAll} />
     </View>
   );
 };

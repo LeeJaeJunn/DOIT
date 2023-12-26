@@ -9,11 +9,10 @@ const TodoList = ({
   onPressAdd,
   onPressDelete,
   onPressDeleteCheckbox,
-  deleteChecked,
 }: {
   edit: boolean;
   onPressAdd: (value: boolean) => void;
-  // onPressDelete: (selectedDay: string, index: )
+  onPressDelete: (selectedDay: string) => void;
   onPressDeleteCheckbox: (index: number, isSelected: boolean) => void;
 }) => {
   const {data, selectedDay} = useContext<MainContextType>(MainContext);
@@ -26,7 +25,7 @@ const TodoList = ({
       <View className="px-3 pt-3 flex items-center">
         {edit ? (
           <Pressable
-            onPress={() => onPressDelete(selectedDay, deleteChecked)}
+            onPress={() => onPressDelete(selectedDay)}
             className="border-b border-t border-[#ff99cc] ">
             <Text className="text-xl">삭제</Text>
           </Pressable>
@@ -38,11 +37,11 @@ const TodoList = ({
           </Pressable>
         )}
       </View>
-      {data[selectedDay]?.todos?.map((items, index) => (
+      {data[selectedDay]?.todos?.map((item, index) => (
         <TodoBox
-          data={items.todo}
-          isDone={items.isDone}
-          key={index}
+          data={item.todo}
+          isDone={item.isDone}
+          key={`${selectedDay}, ${item.todo}, ${item.isDone}`}
           edit={edit}
           index={index}
           onPressDeleteCheckbox={onPressDeleteCheckbox}

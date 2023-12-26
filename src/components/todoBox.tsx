@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import CheckBox from 'react-native-check-box';
 import {MainContext, MainContextType} from '../main';
@@ -20,7 +20,10 @@ const TodoBox = ({
   const {handleCheckBox, selectedDay} =
     useContext<MainContextType>(MainContext);
 
-  // console.log('데이터', JSON.stringify(data));
+  // 편집취소를 누르면 삭제 체크박스 해제
+  useEffect(() => {
+    setIsDelete(false);
+  }, [edit]);
 
   return (
     <View className="flex flex-row items-center justify-between mt-3 w-100vw">
