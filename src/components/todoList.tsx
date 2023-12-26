@@ -7,13 +7,19 @@ import {MainContext, MainContextType} from '../main';
 const TodoList = ({
   edit,
   onPressAdd,
+  onPressCheckbox,
   onPressDelete,
   onPressDeleteCheckbox,
 }: {
   edit: boolean;
   onPressAdd: (value: boolean) => void;
-  onPressDelete: (selectedDay: string) => void;
-  onPressDeleteCheckbox: (index: number, isSelected: boolean) => void;
+  onPressCheckbox: (
+    selected: string,
+    todoIndex: number,
+    checked: boolean,
+  ) => void;
+  onPressDelete: () => void;
+  onPressDeleteCheckbox: (id: number, isSelected: boolean) => void;
 }) => {
   const {data, selectedDay} = useContext<MainContextType>(MainContext);
 
@@ -25,7 +31,7 @@ const TodoList = ({
       <View className="px-3 pt-3 flex items-center">
         {edit ? (
           <Pressable
-            onPress={() => onPressDelete(selectedDay)}
+            onPress={onPressDelete}
             className="border-b border-t border-[#ff99cc] ">
             <Text className="text-xl">삭제</Text>
           </Pressable>
@@ -41,9 +47,11 @@ const TodoList = ({
         <TodoBox
           data={item.todo}
           isDone={item.isDone}
-          key={`${selectedDay}, ${item.todo}, ${item.isDone}`}
+          key={`${selectedDay}, ${item.id}`}
           edit={edit}
+          id={item.id}
           index={index}
+          onPressCheckbox={onPressCheckbox}
           onPressDeleteCheckbox={onPressDeleteCheckbox}
         />
       ))}

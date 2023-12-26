@@ -7,18 +7,25 @@ const TodoBox = ({
   data,
   edit,
   index,
+  id,
   isDone,
+  onPressCheckbox,
   onPressDeleteCheckbox,
 }: {
   data: string;
   edit: boolean;
   index: number;
+  id: number;
   isDone: boolean;
-  onPressDeleteCheckbox: (index: number, isSelected: boolean) => void;
+  onPressCheckbox: (
+    selected: string,
+    todoIndex: number,
+    checked: boolean,
+  ) => void;
+  onPressDeleteCheckbox: (id: number, isSelected: boolean) => void;
 }) => {
   const [isDelete, setIsDelete] = useState(false);
-  const {handleCheckBox, selectedDay} =
-    useContext<MainContextType>(MainContext);
+  const {selectedDay} = useContext<MainContextType>(MainContext);
 
   // 편집취소를 누르면 삭제 체크박스 해제
   useEffect(() => {
@@ -30,7 +37,7 @@ const TodoBox = ({
       {edit ? (
         <CheckBox
           onClick={() => {
-            onPressDeleteCheckbox(index, !isDelete);
+            onPressDeleteCheckbox(id, !isDelete);
             setIsDelete(!isDelete);
           }}
           isChecked={isDelete}
@@ -39,7 +46,7 @@ const TodoBox = ({
       ) : (
         <CheckBox
           onClick={() => {
-            handleCheckBox(selectedDay, index, !isDone);
+            onPressCheckbox(selectedDay, index, !isDone);
           }}
           isChecked={isDone}
         />

@@ -1,4 +1,4 @@
-import React, {createContext, useEffect, useRef, useState} from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import {Button, View} from 'react-native';
 // import CalendarScreen from './components/calendarScreen';
 import TodoList from './components/todoList';
@@ -16,7 +16,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //   handleCheckBox: () => {},
 // });
 
-export const MainContext = createContext<MainContextType | null>(null);
+export const MainContext = createContext<MainContextType>({
+  data: {},
+  selectedDay: '',
+  calendarData: {},
+});
 
 export interface MainContextType {
   data?: {
@@ -24,12 +28,7 @@ export interface MainContextType {
       todos: TodoType[];
     };
   };
-  selectedDay?: string;
-  markedData?: {
-    [key: string]: {
-      marked: boolean;
-    };
-  };
+  selectedDay: string;
   handleSelectedDay?: (day: CalendarsType) => void;
   calendarData?: {
     [key: string]: {
@@ -37,11 +36,6 @@ export interface MainContextType {
       marked?: boolean;
     };
   };
-  handleCheckBox?: (
-    selected: string,
-    todoIndex: number,
-    checked: boolean,
-  ) => void;
 }
 
 interface CalendarsType {
@@ -53,8 +47,9 @@ interface CalendarsType {
 }
 
 interface TodoType {
-  isDone: boolean;
+  id: number;
   todo: string;
+  isDone: boolean;
 }
 // 달력이 오늘자로 제대로 바뀌는지 확인
 
@@ -66,18 +61,14 @@ const Main = () => {
   const [edit, setEdit] = useState(false);
   const [modalAdd, setModalAdd] = useState(false);
 
-  // 달력 Marked 데이터
-  const [markedData, setMarkedData] = useState({});
   //달력 선택한 날짜
   const [selectedDay, setSelectedDay] = useState(dayjs().format('YYYY-MM-DD'));
-  // 최종 Marked데이터 + selected데이터
+  // 달력 데이터(marked+selected)
   const [calendarData, setCalendarData] = useState({});
   // 입력한 할일
   const [todoData, setTodoData] = useState('');
   //삭제 체크박스 버튼 인덱스들
-  const [deleteChecked, setDeleteChecked] = useState([]);
-  //쳇 렌더링 확인
-  const isMounted = useRef(false);
+  const [deleteChecked, setDeleteChecked] = useState<number[]>([]);
 
   console.log('메인페이지 무한루프 체크');
 
@@ -106,9 +97,18 @@ const Main = () => {
     try {
       const daysData = await getData();
       if (daysData[selected]) {
-        daysData[selected].todos.push({todo: todo, isDone: false});
+        const existingTodos: TodoType[] = daysData[selected].todos;
+        const maxId = existingTodos.reduce(
+          (max, item) => (item.id > max ? item.id : max),
+          -1,
+        );
+        daysData[selected].todos.push({
+          id: maxId + 1,
+          todo: todo,
+          isDone: false,
+        });
       } else {
-        daysData[selected] = {todos: [{todo: todo, isDone: false}]};
+        daysData[selected] = {todos: [{id: 0, todo: todo, isDone: false}]};
       }
       await AsyncStorage.setItem('days', JSON.stringify(daysData));
       console.log('데이터 저장됨');
@@ -147,26 +147,27 @@ const Main = () => {
   };
 
   //삭제버튼
-  const handleDelete = async (day: string) => {
+  const handleDelete = async () => {
     // day는 selectedDay, index는 deleteChecked
     try {
       const daysData = await getData();
       // selectedDay의 todos 배열 가져오기
-      const todos = daysData[day]?.todos || null;
+      const todos: TodoType[] = daysData[selectedDay]?.todos || null;
       if (!todos) {
         console.log('배열없음');
         return;
       }
       // 삭제할 인덱스들을 정렬해 뒤에서부터 제거
-      const sortedIndex = deleteChecked.sort((a, b) => b - a);
+      // const sortedIndex = deleteChecked.sort((a, b) => b - a);
       // todos 배열에서 삭제할 인덱스를 제거
       const updatedTodos = todos.filter(
-        (_, index) => !sortedIndex.includes(index),
+        item => !deleteChecked.includes(item.id),
       );
+
       console.log('sortedIndex', JSON.stringify(updatedTodos));
       // 데이터 저장
       if (updatedTodos.length > 0) {
-        daysData[day] = {todos: updatedTodos};
+        daysData[selectedDay] = {todos: updatedTodos};
         await AsyncStorage.setItem('days', JSON.stringify(daysData));
         setData(daysData);
         console.log('데이터 삭제됨', JSON.stringify(daysData));
@@ -185,11 +186,11 @@ const Main = () => {
   };
 
   // 식제 체크박스 데이터 설정
-  const handleDeleteCheckbox = (index: number, isSelected: boolean) => {
+  const handleDeleteCheckbox = (id: number, isSelected: boolean) => {
     if (isSelected) {
-      setDeleteChecked([...deleteChecked, index]);
+      setDeleteChecked([...deleteChecked, id]);
     } else {
-      setDeleteChecked(deleteChecked.filter(item => item !== index));
+      setDeleteChecked(deleteChecked.filter(item => item !== id));
     }
   };
 
@@ -238,22 +239,22 @@ const Main = () => {
         Object.keys(data).map(items => [items, {marked: true}]),
       ),
     };
-    setMarkedData(obj.days);
+    // setMarkedData(obj.days);
 
     // 첫 렌더링시 selectedDay 기본 설정. 수정해야함
     const aaa = {[selectedDay]: {selected: true}};
     setCalendarData({...obj.days, ...aaa});
-  }, [data]);
+  }, [data, selectedDay]);
 
   // calendarData 생성
-  useEffect(() => {
-    if (isMounted.current) {
-      const obj = {[selectedDay]: {selected: true}};
-      setCalendarData({...markedData, ...obj});
-    } else {
-      isMounted.current = true;
-    }
-  }, [selectedDay, markedData]);
+  // useEffect(() => {
+  //   if (isMounted.current) {
+  //     const obj = {[selectedDay]: {selected: true}};
+  //     setCalendarData({...markedData, ...obj});
+  //   } else {
+  //     isMounted.current = true;
+  //   }
+  // }, [selectedDay, markedData]);
 
   //어떤 행동이 일어났을떄 삭제 체크박스 초기화.
   useEffect(() => {
@@ -269,10 +270,8 @@ const Main = () => {
         value={{
           data,
           selectedDay,
-          markedData,
           handleSelectedDay,
           calendarData,
-          handleCheckBox,
         }}>
         <Header onPressEdit={handleEdit} edit={edit} />
         {/* <CalendarScreen /> */}
@@ -287,6 +286,7 @@ const Main = () => {
         <TodoList
           edit={edit}
           onPressAdd={setModalAdd}
+          onPressCheckbox={handleCheckBox}
           onPressDelete={handleDelete}
           onPressDeleteCheckbox={handleDeleteCheckbox}
         />

@@ -12,7 +12,6 @@ const CalendarScreen = () => {
     <View>
       <Calendar
         monthFormat={'yyyy년 MM월'}
-        // markedDates={markedData}
         markedDates={calendarData}
         pagingEnabled
         theme={{
