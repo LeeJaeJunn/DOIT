@@ -7,8 +7,55 @@ import AddTodo from './components/addTodo';
 import dayjs from 'dayjs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const MainContext = createContext();
+// export const MainContext = createContext<MainContextType>({
+//   data: {},
+//   selectedDay: dayjs().format('YYYY-MM-DD'),
+//   markedData: {},
+//   handleSelectedDay: () => {},
+//   calendarData: {},
+//   handleCheckBox: () => {},
+// });
 
+export const MainContext = createContext<MainContextType | null>(null);
+
+export interface MainContextType {
+  data?: {
+    [key: string]: {
+      todos: TodoType[];
+    };
+  };
+  selectedDay?: string;
+  markedData?: {
+    [key: string]: {
+      marked: boolean;
+    };
+  };
+  handleSelectedDay?: (day: CalendarsType) => void;
+  calendarData?: {
+    [key: string]: {
+      selected?: boolean;
+      marked?: boolean;
+    };
+  };
+  handleCheckBox?: (
+    selected: string,
+    todoIndex: number,
+    checked: boolean,
+  ) => void;
+}
+
+interface CalendarsType {
+  dateString: string;
+  day: number;
+  month: number;
+  timestamp: number;
+  year: number;
+}
+
+interface TodoType {
+  isDone: boolean;
+  todo: string;
+}
 // 달력이 오늘자로 제대로 바뀌는지 확인
 
 const Main = () => {
@@ -27,12 +74,19 @@ const Main = () => {
   const [calendarData, setCalendarData] = useState({});
   // 입력한 할일
   const [todoData, setTodoData] = useState('');
+  //삭제 체크박스 버튼 인덱스들
+  const [deleteChecked, setDeleteChecked] = useState([]);
   //쳇 렌더링 확인
   const isMounted = useRef(false);
 
-  const handleSelectedDay = day => {
+  console.log('메인페이지 무한루프 체크');
+
+  // 달력 날짜 선택
+  const handleSelectedDay = (day: CalendarsType) => {
     setSelectedDay(day.dateString);
   };
+
+  // 편집버튼
   const handleEdit = () => {
     setEdit(!edit);
   };
@@ -48,7 +102,7 @@ const Main = () => {
   };
 
   // 저장버튼
-  const handleAddTodo = async (selected, todo) => {
+  const handleAddTodo = async (selected: string, todo: string) => {
     try {
       const daysData = await getData();
       if (daysData[selected]) {
@@ -58,6 +112,8 @@ const Main = () => {
       }
       await AsyncStorage.setItem('days', JSON.stringify(daysData));
       console.log('데이터 저장됨');
+      // 임시로 저장, 체크박스 누를떄마다 데이터 새로가져옴.
+      setData(daysData);
     } catch (e) {
       console.log('데이터 저장중 에러', e);
     }
@@ -66,21 +122,74 @@ const Main = () => {
   };
 
   // 체크박스버튼
-  const handleCheckBox = async (selected, todoIndex, checked) => {
+  const handleCheckBox = async (
+    selected: string,
+    todoIndex: number,
+    checked: boolean,
+  ) => {
     try {
       const daysData = await getData();
-      const updatedTodos = daysData[selected].todos.map((items, index) => {
-        if (index === todoIndex) {
-          return {...items, isDone: checked};
-        }
-        return items;
-      });
+      const updatedTodos = daysData[selected].todos.map(
+        (items: TodoType, index: number) => {
+          if (index === todoIndex) {
+            return {...items, isDone: checked};
+          }
+          return items;
+        },
+      );
       daysData[selected].todos = updatedTodos;
       await AsyncStorage.setItem('days', JSON.stringify(daysData));
+      // 임시로 저장, 체크박스 누를떄마다 데이터 새로가져옴.
+      setData(daysData);
       console.log('데이터 수정됨', JSON.stringify(daysData));
     } catch (e) {
       console.log('데이터 수정 중 에러', e);
     }
+  };
+
+  //삭제버튼
+  const handleDelete = async (day: string, index) => {
+    // day는 selectedDay, index는 deleteChecked
+    try {
+      const daysData = await getData();
+      // selectedDay의 todos 배열 가져오기
+      const todos = daysData[day]?.todos || null;
+      // 삭제할 인덱스들을 정렬해 뒤에서부터 제거
+      const sortedIndex = index.sort((a, b) => b - a);
+      // todos 배열에서 삭제할 인덱스를 제거
+      const updatedTodos = todos.filter(
+        (_, index) => !sortedIndex.includes(index),
+      );
+      // 데이터 저장
+      daysData[day] = {todos: updatedTodos};
+      await AsyncStorage.setItem('days', JSON.stringify(daysData));
+      //삭제 체크 데이터 초기화
+      setDeleteChecked([]);
+      setData(daysData);
+      console.log('데이터 삭제됨');
+      //삭제 체크박스 초기화
+    } catch (e) {
+      console.log('데이터 삭제중 에러', e);
+    }
+  };
+
+  // 식제 체크박스 데이터 설정
+  const handleDeleteCheckbox = (index: number, isSelected: boolean) => {
+    if (isSelected) {
+      setDeleteChecked([...deleteChecked, index]);
+    } else {
+      setDeleteChecked(deleteChecked.filter(item => item !== index));
+    }
+  };
+
+  //삭제 체크박스 데이터 확인
+  const deleteTest = () => {
+    console.log('체크 확인', deleteChecked);
+  };
+
+  // 데이터들 확인
+  const dataTest = () => {
+    console.log('데이터 확인', JSON.stringify(data));
   };
 
   // 데이터 초기화
@@ -105,25 +214,31 @@ const Main = () => {
   //   setCalendarData({...obj.days, ...aaa});
   // }, [data]);
 
-  // 데이터를 markedData로 변경(todos 삭제, marked 추가) 데이터: AsyncStaorge 사용
+  // 초기 데이터 설정 [data]를 해줘야 하는데 무한 리로딩 문제...
   useEffect(() => {
     async function getDatas() {
       try {
         const jsonValue = await AsyncStorage.getItem('days');
         const aaa = jsonValue != null ? JSON.parse(jsonValue) : {};
         setData(aaa);
+        console.log('초기 데이터 가져옴');
       } catch (e) {
         console.log('초기 데이터 설정 오류(markedData부분)', e);
       }
     }
     getDatas();
+  }, []);
 
+  // 데이터를 markedData로 변경(todos 삭제, marked 추가) 데이터: AsyncStaorge 사용
+  useEffect(() => {
     const obj = {
       days: Object.fromEntries(
         Object.keys(data).map(items => [items, {marked: true}]),
       ),
     };
     setMarkedData(obj.days);
+
+    // 첫 렌더링시 selectedDay 기본 설정. 수정해야함
     const aaa = {[selectedDay]: {selected: true}};
     setCalendarData({...obj.days, ...aaa});
   }, [data]);
@@ -138,6 +253,9 @@ const Main = () => {
     }
   }, [selectedDay, markedData]);
 
+  if (!data || !selectedDay) {
+    return null;
+  }
   return (
     <View className="w-full h-full space-y-5 bg-white">
       <MainContext.Provider
@@ -159,10 +277,18 @@ const Main = () => {
           text={todoData}
           setText={setTodoData}
         />
-        <TodoList edit={edit} onPressAdd={setModalAdd} />
+        <TodoList
+          edit={edit}
+          onPressAdd={setModalAdd}
+          onPressDelete={handleDelete}
+          onPressDeleteCheckbox={handleDeleteCheckbox}
+          deleteChecked={deleteChecked}
+        />
         {/* <Test /> */}
       </MainContext.Provider>
-      <Button title="데이터 초기화 테스트" onPress={clearAll} />
+      <Button title="삭제 테스트" onPress={deleteTest} />
+      <Button title="데이터 테스트" onPress={dataTest} />
+      {/* <Button title="데이터 초기화 테스트" onPress={clearAll} /> */}
     </View>
   );
 };

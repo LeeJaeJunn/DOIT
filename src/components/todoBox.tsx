@@ -1,26 +1,24 @@
 import React, {useContext, useState} from 'react';
 import {Text, View} from 'react-native';
 import CheckBox from 'react-native-check-box';
-import {MainContext} from '../main';
+import {MainContext, MainContextType} from '../main';
 
 const TodoBox = ({
   data,
   edit,
   index,
   isDone,
+  onPressDeleteCheckbox,
 }: {
   data: string;
   edit: boolean;
   index: number;
   isDone: boolean;
+  onPressDeleteCheckbox: (index: number, isSelected: boolean) => void;
 }) => {
   const [isDelete, setIsDelete] = useState(false);
-  const {handleCheckBox} = useContext(MainContext);
-  const {selectedDay} = useContext(MainContext);
-
-  const HandleDelete = () => {
-    setIsDelete(!isDelete);
-  };
+  const {handleCheckBox, selectedDay} =
+    useContext<MainContextType>(MainContext);
 
   // console.log('데이터', JSON.stringify(data));
 
@@ -28,7 +26,10 @@ const TodoBox = ({
     <View className="flex flex-row items-center justify-between mt-3 w-100vw">
       {edit ? (
         <CheckBox
-          onClick={HandleDelete}
+          onClick={() => {
+            onPressDeleteCheckbox(index, !isDelete);
+            setIsDelete(!isDelete);
+          }}
           isChecked={isDelete}
           checkBoxColor="#FF66b2"
         />

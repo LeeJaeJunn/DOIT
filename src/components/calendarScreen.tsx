@@ -2,10 +2,11 @@ import React, {useContext} from 'react';
 import {View} from 'react-native';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import {MainContext} from '../main';
+import {MainContextType} from '../main';
 
 const CalendarScreen = () => {
-  const {handleSelectedDay} = useContext(MainContext);
-  const {calendarData} = useContext(MainContext);
+  const {handleSelectedDay, calendarData} =
+    useContext<MainContextType>(MainContext);
 
   return (
     <View>

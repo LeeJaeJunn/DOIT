@@ -1,6 +1,6 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {Button, Modal, StyleSheet, Text, TextInput, View} from 'react-native';
-import {MainContext} from '../main';
+import {MainContext, MainContextType} from '../main';
 
 const AddTodo = ({
   visible,
@@ -15,8 +15,11 @@ const AddTodo = ({
   text: string;
   setText: (value: string) => void;
 }) => {
-  const {selectedDay} = useContext(MainContext);
+  const {selectedDay} = useContext<MainContextType>(MainContext);
 
+  if (!selectedDay) {
+    return null;
+  }
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalBackground}>

@@ -2,23 +2,32 @@ import React, {useContext} from 'react';
 import {Pressable, ScrollView, Text, View} from 'react-native';
 
 import TodoBox from './todoBox';
-import {MainContext} from '../main';
+import {MainContext, MainContextType} from '../main';
 
 const TodoList = ({
   edit,
   onPressAdd,
+  onPressDelete,
+  onPressDeleteCheckbox,
+  deleteChecked,
 }: {
   edit: boolean;
   onPressAdd: (value: boolean) => void;
+  // onPressDelete: (selectedDay: string, index: )
+  onPressDeleteCheckbox: (index: number, isSelected: boolean) => void;
 }) => {
-  const {data} = useContext(MainContext);
-  const {selectedDay} = useContext(MainContext);
+  const {data, selectedDay} = useContext<MainContextType>(MainContext);
 
+  if (!data || !selectedDay) {
+    return null;
+  }
   return (
     <ScrollView className="flex flex-col key px-3">
       <View className="px-3 pt-3 flex items-center">
         {edit ? (
-          <Pressable className="border-b border-t border-[#ff99cc] ">
+          <Pressable
+            onPress={() => onPressDelete(selectedDay, deleteChecked)}
+            className="border-b border-t border-[#ff99cc] ">
             <Text className="text-xl">삭제</Text>
           </Pressable>
         ) : (
@@ -36,6 +45,7 @@ const TodoList = ({
           key={index}
           edit={edit}
           index={index}
+          onPressDeleteCheckbox={onPressDeleteCheckbox}
         />
       ))}
     </ScrollView>

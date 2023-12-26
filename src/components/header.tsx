@@ -3,6 +3,10 @@ import {Pressable, Text, View} from 'react-native';
 import CalendarScreen from './calendarScreen';
 import {MainContext} from '../main';
 
+interface MainContextType {
+  selectedDay: string;
+}
+
 const Header = ({
   onPressEdit,
   edit,
@@ -10,13 +14,16 @@ const Header = ({
   onPressEdit: () => void;
   edit: boolean;
 }) => {
-  const {selectedDay} = useContext(MainContext);
+  const {selectedDay} = useContext<MainContextType>(MainContext);
   const [viewCalendar, setViewCalendar] = useState(false);
 
   const handleViewCalendar = () => {
     setViewCalendar(!viewCalendar);
   };
 
+  if (!selectedDay) {
+    return null;
+  }
   return (
     <View className=" flex flex-col">
       <View className="w-full flex flex-row pt-5 pb-5 px-5 justify-between items-center">
