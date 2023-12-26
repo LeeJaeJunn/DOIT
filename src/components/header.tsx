@@ -1,11 +1,7 @@
 import React, {useContext, useState} from 'react';
 import {Pressable, Text, View} from 'react-native';
 import CalendarScreen from './calendarScreen';
-import {MainContext} from '../main';
-
-interface MainContextType {
-  selectedDay: string;
-}
+import {MainContext, MainContextType} from '../main';
 
 const Header = ({
   onPressEdit,

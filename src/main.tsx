@@ -7,20 +7,19 @@ import AddTodo from './components/addTodo';
 import dayjs from 'dayjs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// export const MainContext = createContext<MainContextType>({
-//   data: {},
-//   selectedDay: dayjs().format('YYYY-MM-DD'),
-//   markedData: {},
-//   handleSelectedDay: () => {},
-//   calendarData: {},
-//   handleCheckBox: () => {},
-// });
-
 export const MainContext = createContext<MainContextType>({
   data: {},
-  selectedDay: '',
+  selectedDay: dayjs().format('YYYY-MM-DD'),
+  handleSelectedDay: () => {},
   calendarData: {},
+  handleCheckBox: () => {},
 });
+
+// export const MainContext = createContext<MainContextType>({
+//   data: {},
+//   selectedDay: '',
+//   calendarData: {},
+// });
 
 export interface MainContextType {
   data?: {
@@ -36,6 +35,11 @@ export interface MainContextType {
       marked?: boolean;
     };
   };
+  handleCheckBox: (
+    selected: string,
+    todoIndex: number,
+    checked: boolean,
+  ) => void;
 }
 
 interface CalendarsType {
@@ -272,6 +276,7 @@ const Main = () => {
           selectedDay,
           handleSelectedDay,
           calendarData,
+          handleCheckBox,
         }}>
         <Header onPressEdit={handleEdit} edit={edit} />
         {/* <CalendarScreen /> */}
@@ -286,7 +291,6 @@ const Main = () => {
         <TodoList
           edit={edit}
           onPressAdd={setModalAdd}
-          onPressCheckbox={handleCheckBox}
           onPressDelete={handleDelete}
           onPressDeleteCheckbox={handleDeleteCheckbox}
         />

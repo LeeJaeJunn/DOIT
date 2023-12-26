@@ -7,17 +7,11 @@ import {MainContext, MainContextType} from '../main';
 const TodoList = ({
   edit,
   onPressAdd,
-  onPressCheckbox,
   onPressDelete,
   onPressDeleteCheckbox,
 }: {
   edit: boolean;
   onPressAdd: (value: boolean) => void;
-  onPressCheckbox: (
-    selected: string,
-    todoIndex: number,
-    checked: boolean,
-  ) => void;
   onPressDelete: () => void;
   onPressDeleteCheckbox: (id: number, isSelected: boolean) => void;
 }) => {
@@ -51,7 +45,6 @@ const TodoList = ({
           edit={edit}
           id={item.id}
           index={index}
-          onPressCheckbox={onPressCheckbox}
           onPressDeleteCheckbox={onPressDeleteCheckbox}
         />
       ))}
