@@ -110,7 +110,7 @@ const Main = () => {
       }
       await AsyncStorage.setItem('days', JSON.stringify(daysData));
       console.log('데이터 저장됨');
-      // 임시로 저장, 체크박스 누를떄마다 데이터 새로가져옴.
+
       setData(daysData);
     } catch (e) {
       console.log('데이터 저장중 에러', e);
@@ -137,7 +137,7 @@ const Main = () => {
       );
       daysData[selected].todos = updatedTodos;
       await AsyncStorage.setItem('days', JSON.stringify(daysData));
-      // 임시로 저장, 체크박스 누를떄마다 데이터 새로가져옴.
+
       setData(daysData);
     } catch (e) {
       console.log('데이터 수정 중 에러', e);
@@ -195,7 +195,7 @@ const Main = () => {
   //     console.log('초기화됨');
   //     const daysData = await getData();
   //     setData(daysData);
-  //     console.log('초기화됐나?', daysData);
+  //     console.log('초기화확인', daysData);
   //   } catch (e) {
   //     console.log('초기화중 오류발생');
   //   }
@@ -223,22 +223,11 @@ const Main = () => {
         Object.keys(data).map(items => [items, {marked: true}]),
       ),
     };
-    // setMarkedData(obj.days);
 
     // 첫 렌더링시 selectedDay 기본 설정. 수정해야함
     const aaa = {[selectedDay]: {selected: true}};
     setCalendarData({...obj.days, ...aaa});
   }, [data, selectedDay]);
-
-  // calendarData 생성
-  // useEffect(() => {
-  //   if (isMounted.current) {
-  //     const obj = {[selectedDay]: {selected: true}};
-  //     setCalendarData({...markedData, ...obj});
-  //   } else {
-  //     isMounted.current = true;
-  //   }
-  // }, [selectedDay, markedData]);
 
   //어떤 행동이 일어났을떄 삭제 체크박스 초기화.
   useEffect(() => {
@@ -259,8 +248,6 @@ const Main = () => {
           handleCheckBox,
         }}>
         <Header onPressEdit={handleEdit} edit={edit} />
-        {/* <CalendarScreen /> */}
-        {/* <Test /> */}
         <AddTodo
           visible={modalAdd}
           onPressCancle={setModalAdd}
@@ -274,7 +261,6 @@ const Main = () => {
           onPressDelete={handleDelete}
           onPressDeleteCheckbox={handleDeleteCheckbox}
         />
-        {/* <Test /> */}
       </MainContext.Provider>
       {/* <Button title="데이터 초기화" onPress={clearAll} /> */}
     </View>
