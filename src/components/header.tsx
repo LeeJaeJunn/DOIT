@@ -22,23 +22,19 @@ const Header = ({
   }
   return (
     <View className=" flex flex-col">
-      <View className="w-full flex flex-row pt-5 pb-5 px-5 justify-between items-center">
-        <Pressable onPress={handleViewCalendar}>
+      <View className="w-full flex flex-row py-2 px-5 justify-between items-center">
+        <Pressable onPress={handleViewCalendar} className="px-3 py-2">
           <Text>달력</Text>
         </Pressable>
-        <Text className="text-2xl text-black">Memo List</Text>
-        <Pressable onPress={onPressEdit}>
+        <Text className="text-xl text-black">{selectedDay}</Text>
+        <Pressable onPress={onPressEdit} className="px-3 py-2">
           {!edit ? <Text>편집</Text> : <Text>취소</Text>}
         </Pressable>
       </View>
 
       {viewCalendar && <CalendarScreen />}
 
-      <View className="flex flex-row items-center justify-center space-x-1">
-        <View className="bg-gray-500 h-1 w-full" />
-        <Text>{selectedDay}</Text>
-        <View className="bg-gray-500 h-1 w-full" />
-      </View>
+      <View className="bg-gray-500 h-1 w-full" />
     </View>
   );
 };

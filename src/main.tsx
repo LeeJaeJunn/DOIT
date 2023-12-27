@@ -1,5 +1,5 @@
 import React, {createContext, useEffect, useState} from 'react';
-import {Button, View} from 'react-native';
+import {View} from 'react-native';
 // import CalendarScreen from './components/calendarScreen';
 import TodoList from './components/todoList';
 import Header from './components/header';
@@ -14,12 +14,6 @@ export const MainContext = createContext<MainContextType>({
   calendarData: {},
   handleCheckBox: () => {},
 });
-
-// export const MainContext = createContext<MainContextType>({
-//   data: {},
-//   selectedDay: '',
-//   calendarData: {},
-// });
 
 export interface MainContextType {
   data?: {
@@ -152,7 +146,6 @@ const Main = () => {
 
   //삭제버튼
   const handleDelete = async () => {
-    // day는 selectedDay, index는 deleteChecked
     try {
       const daysData = await getData();
       // selectedDay의 todos 배열 가져오기
@@ -161,8 +154,6 @@ const Main = () => {
         console.log('배열없음');
         return;
       }
-      // 삭제할 인덱스들을 정렬해 뒤에서부터 제거
-      // const sortedIndex = deleteChecked.sort((a, b) => b - a);
       // todos 배열에서 삭제할 인덱스를 제거
       const updatedTodos = todos.filter(
         item => !deleteChecked.includes(item.id),
@@ -183,7 +174,6 @@ const Main = () => {
       }
       //삭제 체크 데이터 초기화
       setDeleteChecked([]);
-      //삭제 체크박스 초기화
     } catch (e) {
       console.log('데이터 삭제중 에러', e);
     }
@@ -198,28 +188,18 @@ const Main = () => {
     }
   };
 
-  //삭제 체크박스 데이터 확인
-  const deleteTest = () => {
-    console.log('체크 확인', deleteChecked);
-  };
-
-  // 데이터들 확인
-  const dataTest = () => {
-    console.log('데이터 확인', JSON.stringify(data));
-  };
-
   // 데이터 초기화
-  const clearAll = async () => {
-    try {
-      await AsyncStorage.clear();
-      console.log('초기화됨');
-      const daysData = await getData();
-      setData(daysData);
-      console.log('초기화됐나?', daysData);
-    } catch (e) {
-      console.log('초기화중 오류발생');
-    }
-  };
+  // const clearAll = async () => {
+  //   try {
+  //     await AsyncStorage.clear();
+  //     console.log('초기화됨');
+  //     const daysData = await getData();
+  //     setData(daysData);
+  //     console.log('초기화됐나?', daysData);
+  //   } catch (e) {
+  //     console.log('초기화중 오류발생');
+  //   }
+  // };
 
   // 초기 데이터 설정
   useEffect(() => {
@@ -296,103 +276,9 @@ const Main = () => {
         />
         {/* <Test /> */}
       </MainContext.Provider>
-      <Button title="삭제 테스트" onPress={deleteTest} />
-      <Button title="데이터 테스트" onPress={dataTest} />
-      <Button title="데이터 초기화 테스트" onPress={clearAll} />
+      {/* <Button title="데이터 초기화" onPress={clearAll} /> */}
     </View>
   );
 };
-
-// 데이터 처리.
-// const Test = () => {
-//   const [selectedData, setSelectedData] = useState('2023-12-29');
-//   const [todo, setTodo] = useState('테스트트5');
-//   const [isDone, setIsDone] = useState(true);
-//   // 데이터 가져오기
-//   const getData = async () => {
-//     try {
-//       const jsonValue = await AsyncStorage.getItem('days');
-//       return jsonValue != null ? JSON.parse(jsonValue) : {};
-//     } catch (e) {
-//       console.log('데이터 가져오는중 에러 발생', e);
-//       return {};
-//     }
-//   };
-//   //데이터 저장
-//   const onPressSave = async (selectedData, newTodo) => {
-//     try {
-//       const daysData = await getData();
-//       if (daysData[selectedData]) {
-//         daysData[selectedData].todos.push({todo: newTodo, isDone: false});
-//       } else {
-//         daysData[selectedData] = {todos: [{todo: newTodo, isDone: false}]};
-//       }
-//       await AsyncStorage.setItem('days', JSON.stringify(daysData));
-//       console.log('데이터 보내짐');
-//     } catch (e) {
-//       console.log('에러러', e);
-//     }
-//   };
-
-//   const onPressEdit = async (selectedData, todoIndex, isDone) => {
-//     try {
-//       const daysData = await getData();
-//       const updatedTodos = daysData[selectedData].todos.map((items, index) => {
-//         if (index === todoIndex) {
-//           return {...items, isDone: isDone};
-//         }
-//         return items;
-//       });
-//       daysData[selectedData].todos = updatedTodos;
-//       await AsyncStorage.setItem('days', JSON.stringify(daysData));
-//       console.log('데이터 수정됨');
-//     } catch (e) {
-//       console.log('데이터 수정 중 에러', e);
-//     }
-//   };
-//   // 데이터 불러와졌는지 확인
-//   const testSave = async () => {
-//     try {
-//       const daysData = await getData();
-//       console.log('데이터 가져와졌나?', JSON.stringify(daysData));
-//     } catch (e) {
-//       console.log('오류발생!', e);
-//     }
-//   };
-
-//   // 데이터 초기화
-//   const clearAll = async () => {
-//     try {
-//       await AsyncStorage.clear();
-//       console.log('초기화됨');
-//     } catch (e) {
-//       console.log('초기화중 오류발생');
-//     }
-//   };
-
-//   return (
-//     <View className="flex flex-col space-y-5">
-//       <Text className="text-black text-2xl">테스트</Text>
-//       <Pressable
-//         className="bg-blue-300"
-//         onPress={() => onPressSave(selectedData, todo)}>
-//         <Text>저장</Text>
-//       </Pressable>
-//       <Pressable className="bg-blue-300" onPress={testSave}>
-//         <Text>불러오기</Text>
-//       </Pressable>
-//       <Pressable
-//         className="bg-blue-300"
-//         onPress={() => {
-//           onPressEdit(selectedData, 0, isDone);
-//         }}>
-//         <Text>수정</Text>
-//       </Pressable>
-//       <Pressable className="bg-blue-300" onPress={clearAll}>
-//         <Text>초기화</Text>
-//       </Pressable>
-//     </View>
-//   );
-// };
 
 export default Main;

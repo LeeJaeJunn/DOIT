@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import CheckBox from 'react-native-check-box';
 import {MainContext, MainContextType} from '../main';
 
@@ -28,7 +28,13 @@ const TodoBox = ({
   }, [edit]);
 
   return (
-    <View className="flex flex-row items-center justify-between mt-3 w-100vw">
+    <View
+      style={styles.viewBackground}
+      className={
+        isDone
+          ? 'flex flex-row items-center justify-between mt-3 w-100vw rounded-lg bg-gray-300'
+          : 'flex flex-row items-center justify-between mt-3 w-100vw rounded-lg bg-gray-100'
+      }>
       {edit ? (
         <CheckBox
           onClick={() => {
@@ -44,20 +50,31 @@ const TodoBox = ({
             handleCheckBox(selectedDay, index, !isDone);
           }}
           isChecked={isDone}
+          checkBoxColor="#606060"
         />
       )}
       <View
-        className={
-          isDone
-            ? 'bg-gray-500 rounded-lg  flex flex-row items-center justify-between w-5/6 '
-            : 'bg-gray-200 rounded-lg  flex flex-row items-center justify-between w-5/6'
-        }>
-        <Text className={isDone ? 'text-xl line-through' : 'text-xl'}>
+        style={styles.textBackground}
+        className="flex flex-row items-center justify-between">
+        <Text
+          className={isDone ? 'text-lg  text-gray-400' : 'text-lg text-black'}>
           {data}
         </Text>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  viewBackground: {
+    flex: 1,
+  },
+  textBackground: {
+    flex: 0.95,
+  },
+  checkboxBackground: {
+    flex: 0.1,
+  },
+});
 
 export default TodoBox;

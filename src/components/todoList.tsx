@@ -27,13 +27,13 @@ const TodoList = ({
           <Pressable
             onPress={onPressDelete}
             className="border-b border-t border-[#ff99cc] ">
-            <Text className="text-xl">삭제</Text>
+            <Text className="text-lg">삭제</Text>
           </Pressable>
         ) : (
           <Pressable
             onPress={() => onPressAdd(true)}
             className="border-y border-gray-500 ">
-            <Text className="text-xl">메모를 추가하세요</Text>
+            <Text className="text-lg">메모를 추가하세요</Text>
           </Pressable>
         )}
       </View>
