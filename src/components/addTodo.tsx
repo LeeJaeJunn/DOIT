@@ -42,13 +42,6 @@ const AddTodo = ({
             onPress={() => onPressCancle(false)}
             title="취소"
           />
-          <Button
-            color={'red'}
-            onPress={() => {
-              console.log(text);
-            }}
-            title="확인 테스트"
-          />
         </View>
       </View>
     </Modal>
