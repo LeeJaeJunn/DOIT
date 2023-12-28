@@ -10,6 +10,7 @@ const CalendarScreen = () => {
 
   return (
     <View>
+      <View className="bg-gray-500 h-1 w-full" />
       <Calendar
         monthFormat={'yyyy년 MM월'}
         markedDates={calendarData}
