@@ -69,6 +69,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '30%',
     width: '100%',
+    backgroundColor: 'rgba(224, 224, 224, 1)',
+    borderRadius: 15,
   },
   buttonGroup: {
     flexDirection: 'row',
@@ -76,6 +78,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 5,
   },
 });
 
